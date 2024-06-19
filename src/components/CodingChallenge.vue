@@ -56,6 +56,7 @@ import * as echarts from "echarts";
 import { capitalize, get, range } from "lodash";
 import Vue, { reactive } from "vue";
 import TooltipFormatter from "./TooltipFormatter.vue";
+import { toCurrency } from "@/utils/currency";
 
 type OptionContract = {
   strike_price: number;
@@ -113,10 +114,6 @@ function getMinReward(option: OptionContract) {
   if (option.type === "Put" && option.long_short === "long") return toCurrency(-option.ask);
   if (option.type === "Put" && option.long_short === "short") return "-Infinity";
   throw new Error("Invalid option contract");
-}
-
-function toCurrency(value: string | number) {
-  return Number(value).toLocaleString("en-US", { style: "currency", currency: "USD" });
 }
 
 export default Vue.extend({

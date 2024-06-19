@@ -14,6 +14,7 @@
 </template>
 
 <script lang="ts">
+import { toCurrency } from "@/utils/currency";
 import Vue from "vue";
 
 export default Vue.extend({
@@ -29,9 +30,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    toCurrency(value: number | string): string {
-      return Number(value).toLocaleString("en-US", { style: "currency", currency: "USD" });
-    },
+    toCurrency,
   },
 });
 </script>
