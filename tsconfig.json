@@ -4,6 +4,7 @@
     "module": "esnext",
     "baseUrl": "./",
     "moduleResolution": "node",
+    "strict": true,
     "paths": {
       "@/*": [
         "src/*"
@@ -14,6 +15,7 @@
       "dom",
       "dom.iterable",
       "scripthost"
-    ]
-  }
+    ],
+  },
+  "include": ["*.ts", "**/*.ts", "**/*.d.ts", "**/*.tsx", "*.vue", "**/*.vue"],
 }
