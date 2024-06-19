@@ -15,7 +15,7 @@
             <div class="text-xs font-bold">{{ getLineLabel(option, index) }}</div>
           </button>
 
-          <div :class="{ hidden: open.index !== index }" class="px-2 pb-2">
+          <div class="px-2 pb-2" v-if="open.index === index">
             <hr class="my-2 border-gray-300" />
             <div class="text-sm grid grid-cols-3 gap-4">
               <div>
@@ -55,6 +55,7 @@
 import * as echarts from "echarts";
 import { capitalize, get, range } from "lodash";
 import Vue, { reactive } from "vue";
+import TooltipFormatter from "./TooltipFormatter.vue";
 
 type OptionContract = {
   strike_price: number;
@@ -114,8 +115,8 @@ function getMinReward(option: OptionContract) {
   throw new Error("Invalid option contract");
 }
 
-function toCurrency(value: number) {
-  return value.toLocaleString("en-US", { style: "currency", currency: "USD" });
+function toCurrency(value: string | number) {
+  return Number(value).toLocaleString("en-US", { style: "currency", currency: "USD" });
 }
 
 export default Vue.extend({
@@ -157,17 +158,25 @@ export default Vue.extend({
       const chart = echarts.init(this.$refs.echarts as HTMLElement);
       const settings = {
         tooltip: {
-          formatter: (params: { seriesName: string; value: string }[]) => {
-            var result = "";
-            params.forEach(function (item) {
-              result += item.seriesName + ": " + item.value + "<br/>";
+          formatter: function (
+            params: { axisValue: number; value: [number, number]; color: string; seriesName: string }[]
+          ) {
+            const TooltipConstructor = Vue.extend(TooltipFormatter);
+            const instance = new TooltipConstructor({
+              propsData: {
+                price: params[0].axisValue,
+                visible: true,
+                rewards: params.map((param) => ({
+                  value: param.value[1],
+                  optionLabel: param.seriesName,
+                  optionColor: param.color,
+                })),
+              },
             });
-            return result;
+            instance.$mount();
+            return instance.$el.outerHTML;
           },
           trigger: "axis",
-          position: function (pt: number[]) {
-            return [pt[0], "10%"];
-          },
         },
         legend: {
           data: this.options.map((option, index) => getLineLabel(option, index)),
@@ -184,18 +193,18 @@ export default Vue.extend({
         xAxis: {
           type: "value",
           axisLabel: { formatter: "${value}" },
-          name: "Underlying Price",
+          name: "Underlying Price ($)",
           nameLocation: "middle",
-          nameGap: 50,
+          nameGap: 40,
         },
         yAxis: {
           type: "value",
           axisLabel: {
             formatter: "${value}",
           },
-          name: "Profit & Loss",
+          name: "Profit & Loss ($)",
           nameLocation: "middle",
-          nameGap: 50,
+          nameGap: 40,
         },
         series: [
           ...this.options.map((option, index) => {
