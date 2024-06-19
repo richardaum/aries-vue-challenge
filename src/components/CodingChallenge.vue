@@ -11,8 +11,27 @@
           :style="`border-color: ${colors[index]}; background-color: ${ligtenColors[index]}`"
           class="border-solid border-2 rounded-xl min-w-[250px]"
         >
-          <button class="p-2 w-full text-left" @click="open.index = index">
+          <button
+            class="p-2 w-full text-left flex items-center"
+            @click="open.index = index"
+            :disabled="open.index === index"
+          >
             <div class="text-xs font-bold">{{ getLineLabel(option, index) }}</div>
+
+            <svg
+              v-if="open.index !== index"
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              class="ml-auto"
+            >
+              <path
+                d="M8.86615 12.8053C8.48125 13.472 7.519 13.472 7.1341 12.8053L3.4056 6.34735C3.0207 5.68069 3.50182 4.84735 4.27163 4.84735L11.7286 4.84735C12.4984 4.84735 12.9795 5.68068 12.5946 6.34735L8.86615 12.8053Z"
+                class="fill-black"
+              />
+            </svg>
           </button>
 
           <div class="px-2 pb-2" v-if="open.index === index">
@@ -28,11 +47,21 @@
               </div>
               <div>
                 <div class="text-xs text-black/50">Strike Price</div>
-                {{ toCurrency(option.strike_price) }}
+                <button
+                  class="underline decoration-dashed underline-offset-2 decoration-from-font"
+                  @click="showMarkline(option.strike_price, 'Strike Price', colors[index])"
+                >
+                  {{ toCurrency(option.strike_price) }}
+                </button>
               </div>
               <div>
                 <div class="text-xs text-black/50">Break Even</div>
-                {{ toCurrency(getBreakEven(option)) }}
+                <button
+                  class="underline decoration-dashed underline-offset-2 decoration-from-font"
+                  @click="showMarkline(getBreakEven(option), 'Break Even', colors[index])"
+                >
+                  {{ toCurrency(getBreakEven(option)) }}
+                </button>
               </div>
               <div>
                 <div class="text-xs text-black/50">Max Profit</div>
@@ -146,6 +175,23 @@ export default Vue.extend({
     getBreakEven,
     getMinReward,
     getMaxReward,
+    showMarkline(x: number, prefix: string, color: string) {
+      this.echarts?.setOption({
+        series: [
+          {
+            markLine: {
+              data: [
+                {
+                  xAxis: x,
+                  label: { formatter: `${prefix}: ${toCurrency(x)}` },
+                  lineStyle: { color },
+                },
+              ],
+            },
+          },
+        ],
+      });
+    },
     initChart() {
       const step = 1;
       const offset = 50;
@@ -219,6 +265,33 @@ export default Vue.extend({
       };
 
       chart.setOption(settings);
+
+      chart.on("click", function (params) {
+        if (params.componentType === "series") {
+          var [x] = params.value as [number, number];
+          chart.setOption({
+            series: [
+              {
+                markLine: {
+                  data: [
+                    {
+                      xAxis: x,
+                      label: { formatter: "${c}" },
+                      lineStyle: { color: "gray" },
+                    },
+                  ],
+                },
+              },
+            ],
+          });
+        }
+
+        if (params.componentType === "markLine") {
+          chart.setOption({
+            series: [{ markLine: { data: [] } }],
+          });
+        }
+      });
 
       this.echarts = chart;
     },
