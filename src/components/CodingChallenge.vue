@@ -1,21 +1,60 @@
 <template>
   <div class="container">
-    <h1>Options Profit Calculator</h1>
+    <h1 class="text-2xl font-bold mb-3">Options Profit Calculator</h1>
 
-    <div ref="echarts" style="width: 800px; height: 500px"></div>
-    <ul>
-      <li v-for="(option, key) in options" :key="key">
-        {{ option.strike_price }}
-      </li>
-    </ul>
+    <div class="flex">
+      <div ref="echarts" style="width: 600px; height: 500px"></div>
+      <ul class="gap-4 text-left flex flex-col my-4 items-start">
+        <li
+          v-for="(option, index) in options"
+          :key="index"
+          :style="`border-color: ${colors[index]}; background-color: ${ligtenColors[index]}`"
+          class="border-solid border-2 rounded-xl min-w-[250px]"
+        >
+          <button class="p-2 w-full text-left" @click="open.index = index">
+            <div class="text-xs font-bold">{{ getLineLabel(option, index) }}</div>
+          </button>
+
+          <div :class="{ hidden: open.index !== index }" class="px-2 pb-2">
+            <hr class="my-2 border-gray-300" />
+            <div class="text-sm grid grid-cols-3 gap-4">
+              <div>
+                <div class="text-xs text-black/50">Bid</div>
+                {{ toCurrency(option.bid) }}
+              </div>
+              <div>
+                <div class="text-xs text-black/50">Ask</div>
+                {{ toCurrency(option.ask) }}
+              </div>
+              <div>
+                <div class="text-xs text-black/50">Strike Price</div>
+                {{ toCurrency(option.strike_price) }}
+              </div>
+              <div>
+                <div class="text-xs text-black/50">Break Even</div>
+                {{ toCurrency(getBreakEven(option)) }}
+              </div>
+              <div>
+                <div class="text-xs text-black/50">Max Profit</div>
+                {{ getMaxReward(option) }}
+              </div>
+              <div>
+                <div class="text-xs text-black/50">Max Loss</div>
+                {{ getMinReward(option) }}
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 /* eslint-disable */
 import * as echarts from "echarts";
-import { capitalize, range } from "lodash";
-import Vue from "vue";
+import { capitalize, get, range } from "lodash";
+import Vue, { reactive } from "vue";
 
 type OptionContract = {
   strike_price: number;
@@ -59,6 +98,26 @@ function getLineLabel(option: OptionContract, index: number) {
   return `#${index + 1} (${capitalize(option.type)}&${capitalize(option.long_short)})`;
 }
 
+function getMaxReward(option: OptionContract) {
+  if (option.type === "Call" && option.long_short === "long") return "Infinity";
+  if (option.type === "Call" && option.long_short === "short") return toCurrency(option.bid);
+  if (option.type === "Put" && option.long_short === "long") return "Infinity";
+  if (option.type === "Put" && option.long_short === "short") return toCurrency(option.bid);
+  throw new Error("Invalid option contract");
+}
+
+function getMinReward(option: OptionContract) {
+  if (option.type === "Call" && option.long_short === "long") return toCurrency(-option.ask);
+  if (option.type === "Call" && option.long_short === "short") return "-Infinity";
+  if (option.type === "Put" && option.long_short === "long") return toCurrency(-option.ask);
+  if (option.type === "Put" && option.long_short === "short") return "-Infinity";
+  throw new Error("Invalid option contract");
+}
+
+function toCurrency(value: number) {
+  return value.toLocaleString("en-US", { style: "currency", currency: "USD" });
+}
+
 export default Vue.extend({
   name: "CodingChallenge",
   props: {
@@ -70,8 +129,11 @@ export default Vue.extend({
   components: {},
   data() {
     return {
+      open: reactive({ index: 0 }),
       options: this.optionsData,
       echarts: null as echarts.ECharts | null,
+      colors: ["#4bc0c0", "#9966ff", "#ff9f40", "#ff6384"],
+      ligtenColors: ["#e6f7f7", "#f0eaff", "#fff2e6", "#ffe6ea"],
     };
   },
   mounted() {
@@ -81,14 +143,12 @@ export default Vue.extend({
     this.echarts?.dispose();
   },
   methods: {
+    toCurrency,
+    getLineLabel,
+    getBreakEven,
+    getMinReward,
+    getMaxReward,
     initChart() {
-      const colors = [
-        "rgba(75, 192, 192, 1)",
-        "rgba(153, 102, 255, 1)",
-        "rgba(255, 159, 64, 1)",
-        "rgba(255, 99, 132, 1)",
-      ];
-
       const step = 1;
       const offset = 50;
       const minValue = Math.min(...this.options.map((o) => Math.min(o.strike_price, getBreakEven(o)))) - offset;
@@ -114,7 +174,7 @@ export default Vue.extend({
         },
         toolbox: {
           feature: {
-            dataZoom: { yAxisIndex: "none" },
+            dataZoom: { icon: null },
           },
         },
         dataZoom: [
@@ -142,11 +202,11 @@ export default Vue.extend({
             return {
               data: range(minValue, maxValue, step).map((value) => ({
                 value: [value, getReward(value, option).toFixed(2)],
-                itemStyle: { color: colors[index] },
               })),
               type: "line",
               name: getLineLabel(option, index),
               showSymbol: false,
+              itemStyle: { color: this.colors[index] },
             };
           }),
         ],
