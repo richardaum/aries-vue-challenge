@@ -8,7 +8,7 @@
 <script lang="ts">
 /* eslint-disable */
 import * as echarts from "echarts";
-import {capitalize, sortBy} from "lodash";
+import { capitalize, sortBy } from "lodash";
 import Vue from "vue";
 
 type OptionContract = {
@@ -20,7 +20,7 @@ type OptionContract = {
   /**
    * ISO format
    */
-  expiration_date: string; 
+  expiration_date: string;
 };
 
 type Price = {
@@ -33,7 +33,7 @@ function getBreakEven(option: OptionContract) {
   if (option.type === "Call" && option.long_short === "short") return option.strike_price + option.bid;
   if (option.type === "Put" && option.long_short === "long") return option.strike_price - option.ask;
   if (option.type === "Put" && option.long_short === "short") return option.strike_price - option.bid;
-  throw new Error('Invalid option contract');
+  throw new Error("Invalid option contract");
 }
 
 function getReward(price: number, option: OptionContract) {
@@ -46,7 +46,7 @@ function getReward(price: number, option: OptionContract) {
   } else if (option.type === "Put" && option.long_short === "short") {
     return option.bid - Math.max(option.strike_price - price, 0);
   }
-  throw new Error('Invalid option contract');
+  throw new Error("Invalid option contract");
 }
 
 function getLineLabel(option: OptionContract, index: number) {
@@ -88,8 +88,24 @@ export default Vue.extend({
 
       const chart = echarts.init(this.$refs.echarts as HTMLElement);
       chart.setOption({
-        xAxis: {},
-        yAxis: {},
+        xAxis: {
+          type: "value",
+          axisLabel: {
+            formatter: "${value}",
+          },
+          name: "Underlying Price",
+          nameLocation: "middle",
+          nameGap: 50,
+        },
+        yAxis: {
+          type: "value",
+          axisLabel: {
+            formatter: "${value}",
+          },
+          name: "Profit & Loss",
+          nameLocation: "middle",
+          nameGap: 50,
+        },
         legend: {
           data: this.options.map((option, index) => getLineLabel(option, index)),
         },
@@ -98,13 +114,12 @@ export default Vue.extend({
         },
         series: [
           ...this.options.map((option, index) => ({
-            data: sortBy([min, option.strike_price, getBreakEven(option), max]).map((value) => [
-              value,
-              getReward(value, option).toFixed(2),
-            ]),
+            data: sortBy([min, option.strike_price, getBreakEven(option), max]).map((value) => ({
+              value: [value, getReward(value, option).toFixed(2)],
+              itemStyle: { color: colors[index] },
+            })),
             type: "line",
             name: getLineLabel(option, index),
-            lineStyle: { color: colors[index] },
           })),
         ],
       });
