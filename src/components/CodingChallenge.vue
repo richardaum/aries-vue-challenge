@@ -8,40 +8,35 @@
 <script lang="ts">
 /* eslint-disable */
 import * as echarts from "echarts";
-import capitalize from "lodash";
-import sortBy from "lodash";
+import {capitalize, sortBy} from "lodash";
 import Vue from "vue";
 
-/**
- * @typedef {Object} OptionContract
- * @property {number} strike_price
- * @property {"Call" | "Put"} type
- * @property {number} bid
- * @property {number} ask
- * @property {"long" | "short"} long_short
- * @property {string} expiration_date - ISO format.
- */
+type OptionContract = {
+  strike_price: number;
+  type: "Call" | "Put";
+  bid: number;
+  ask: number;
+  long_short: "long" | "short";
+  /**
+   * ISO format
+   */
+  expiration_date: string; 
+};
 
-/**
- * @typedef {Object} Price
- * @property {number} value - The value of the price.
- * @property {string} label - The label of the price.
- */
+type Price = {
+  value: number;
+  label: string;
+};
 
-/**
- * @param {OptionContract} option
- */
-function getBreakEven(option) {
+function getBreakEven(option: OptionContract) {
   if (option.type === "Call" && option.long_short === "long") return option.strike_price + option.ask;
   if (option.type === "Call" && option.long_short === "short") return option.strike_price + option.bid;
   if (option.type === "Put" && option.long_short === "long") return option.strike_price - option.ask;
   if (option.type === "Put" && option.long_short === "short") return option.strike_price - option.bid;
+  throw new Error('Invalid option contract');
 }
-/**
- * @param {number} price
- * @param {OptionContract} option
- */
-function getReward(price, option) {
+
+function getReward(price: number, option: OptionContract) {
   if (option.type === "Call" && option.long_short === "long") {
     return Math.max(price - option.strike_price, 0) - option.ask;
   } else if (option.type === "Put" && option.long_short === "long") {
@@ -51,23 +46,25 @@ function getReward(price, option) {
   } else if (option.type === "Put" && option.long_short === "short") {
     return option.bid - Math.max(option.strike_price - price, 0);
   }
+  throw new Error('Invalid option contract');
 }
-/**
- * @param {OptionContract} option
- * @param {number} index
- */
-function getLineLabel(option, index) {
+
+function getLineLabel(option: OptionContract, index: number) {
   return `#${index + 1} (${capitalize(option.type)}&${capitalize(option.long_short)})`;
 }
 
 export default Vue.extend({
   name: "CodingChallenge",
   props: {
-    optionsData: Array,
+    optionsData: {
+      type: Array as Vue.PropType<OptionContract[]>,
+      required: true,
+    },
   },
   components: {},
   data() {
     return {
+      options: this.optionsData,
       echarts: null as echarts.ECharts | null,
     };
   },
@@ -79,11 +76,6 @@ export default Vue.extend({
   },
   methods: {
     initChart() {
-      /**
-       * @type {OptionContract[]}
-       */
-      const options = this.$props.optionsData;
-
       const colors = [
         "rgba(75, 192, 192, 1)",
         "rgba(153, 102, 255, 1)",
@@ -94,18 +86,18 @@ export default Vue.extend({
       const min = 0;
       const max = 190;
 
-      const chart = echarts.init(this.$refs.echarts);
+      const chart = echarts.init(this.$refs.echarts as HTMLElement);
       chart.setOption({
         xAxis: {},
         yAxis: {},
         legend: {
-          data: options.map((option, index) => getLineLabel(option, index)),
+          data: this.options.map((option, index) => getLineLabel(option, index)),
         },
         tooltip: {
           trigger: "axis",
         },
         series: [
-          ...options.map((option, index) => ({
+          ...this.options.map((option, index) => ({
             data: sortBy([min, option.strike_price, getBreakEven(option), max]).map((value) => [
               value,
               getReward(value, option).toFixed(2),
