@@ -1,14 +1,20 @@
 <template>
   <div class="container">
     <h1>Options Profit Calculator</h1>
+
     <div ref="echarts" style="width: 800px; height: 500px"></div>
+    <ul>
+      <li v-for="(option, key) in options" :key="key">
+        {{ option.strike_price }}
+      </li>
+    </ul>
   </div>
 </template>
 
 <script lang="ts">
 /* eslint-disable */
 import * as echarts from "echarts";
-import { capitalize, sortBy } from "lodash";
+import { capitalize, range } from "lodash";
 import Vue from "vue";
 
 type OptionContract = {
@@ -83,16 +89,41 @@ export default Vue.extend({
         "rgba(255, 99, 132, 1)",
       ];
 
-      const min = 0;
-      const max = 190;
+      const step = 1;
+      const offset = 50;
+      const minValue = Math.min(...this.options.map((o) => Math.min(o.strike_price, getBreakEven(o)))) - offset;
+      const maxValue = Math.max(...this.options.map((o) => Math.max(o.strike_price, getBreakEven(o)))) + offset;
 
       const chart = echarts.init(this.$refs.echarts as HTMLElement);
-      chart.setOption({
+      const settings = {
+        tooltip: {
+          formatter: (params: { seriesName: string; value: string }[]) => {
+            var result = "";
+            params.forEach(function (item) {
+              result += item.seriesName + ": " + item.value + "<br/>";
+            });
+            return result;
+          },
+          trigger: "axis",
+          position: function (pt: number[]) {
+            return [pt[0], "10%"];
+          },
+        },
+        legend: {
+          data: this.options.map((option, index) => getLineLabel(option, index)),
+        },
+        toolbox: {
+          feature: {
+            dataZoom: { yAxisIndex: "none" },
+          },
+        },
+        dataZoom: [
+          { type: "inside", start: 0, end: 100 },
+          { start: 0, end: 100 },
+        ],
         xAxis: {
           type: "value",
-          axisLabel: {
-            formatter: "${value}",
-          },
+          axisLabel: { formatter: "${value}" },
           name: "Underlying Price",
           nameLocation: "middle",
           nameGap: 50,
@@ -106,23 +137,22 @@ export default Vue.extend({
           nameLocation: "middle",
           nameGap: 50,
         },
-        legend: {
-          data: this.options.map((option, index) => getLineLabel(option, index)),
-        },
-        tooltip: {
-          trigger: "axis",
-        },
         series: [
-          ...this.options.map((option, index) => ({
-            data: sortBy([min, option.strike_price, getBreakEven(option), max]).map((value) => ({
-              value: [value, getReward(value, option).toFixed(2)],
-              itemStyle: { color: colors[index] },
-            })),
-            type: "line",
-            name: getLineLabel(option, index),
-          })),
+          ...this.options.map((option, index) => {
+            return {
+              data: range(minValue, maxValue, step).map((value) => ({
+                value: [value, getReward(value, option).toFixed(2)],
+                itemStyle: { color: colors[index] },
+              })),
+              type: "line",
+              name: getLineLabel(option, index),
+              showSymbol: false,
+            };
+          }),
         ],
-      });
+      };
+
+      chart.setOption(settings);
 
       this.echarts = chart;
     },
