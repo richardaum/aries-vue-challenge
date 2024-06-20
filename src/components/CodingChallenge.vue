@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container mx-auto">
     <h1 class="text-2xl font-bold mb-3">Options Profit Calculator</h1>
 
     <div class="flex">
