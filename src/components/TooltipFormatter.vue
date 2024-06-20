@@ -1,12 +1,12 @@
 <template>
-  <div class="tooltip-content">
+  <div class="p-2 rounded bg-white text-gray-800 text-sm">
     <span data-testid="price">
       <strong>Price:&nbsp;</strong>
       <span>{{ toCurrency(price) }}</span>
     </span>
     <br />
-    <div v-for="reward in rewards" :key="reward.optionLabel" class="tooltip-item" data-testid="reward">
-      <span class="tooltip-color" :style="{ backgroundColor: reward.optionColor }"></span>
+    <div v-for="reward in rewards" :key="reward.optionLabel" class="flex items-center" data-testid="reward">
+      <span class="w-2 h-2 rounded-full inline-block mr-2" :style="{ backgroundColor: reward.optionColor }"></span>
       <span>{{ reward.optionLabel }}:&nbsp;</span>
       <span :class="reward.value >= 0 ? 'text-green-500' : 'text-red-500'" class="flex items-center">
         {{ toCurrency(reward.value) }}
@@ -49,24 +49,3 @@ export default Vue.extend({
   },
 });
 </script>
-
-<style scoped>
-.tooltip-content {
-  padding: 5px;
-  border-radius: 3px;
-  background-color: #fff;
-  color: #333;
-  font-size: 14px;
-}
-.tooltip-item {
-  display: flex;
-  align-items: center;
-}
-.tooltip-color {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
-  margin-right: 5px;
-}
-</style>
