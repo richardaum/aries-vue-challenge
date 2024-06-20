@@ -1,13 +1,13 @@
 <template>
   <div class="tooltip-content">
     <span data-testid="price">
-      <strong>Price:</strong>
+      <strong>Price:&nbsp;</strong>
       <span>{{ toCurrency(price) }}</span>
     </span>
     <br />
     <div v-for="reward in rewards" :key="reward.optionLabel" class="tooltip-item" data-testid="reward">
       <span class="tooltip-color" :style="{ backgroundColor: reward.optionColor }"></span>
-      <span>{{ reward.optionLabel }}:</span>
+      <span>{{ reward.optionLabel }}:&nbsp;</span>
       <span :class="reward.value >= 0 ? 'text-green-500' : 'text-red-500'" class="flex items-center">
         {{ toCurrency(reward.value) }}
       </span>
