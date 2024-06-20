@@ -1,5 +1,5 @@
 import { OptionContract } from "@/types/domain";
-import { capitalize, range } from "lodash";
+import { capitalize, range } from "lodash-es";
 import * as echarts from "echarts";
 import Vue from "vue";
 import TooltipFormatter from "@/components/TooltipFormatter.vue";
