@@ -1,4 +1,26 @@
+# Options Profit Calculator
 
+## Screenshot
+
+![alt text](docs/screenshot.png)
+
+## Features
+
+- 🎛️ Interactive Chart with Pan & Zoom: Use your mouse to easily navigate and explore data.
+- 📊 Tooltips for Profit or Loss Information: Hover over points on the chart to instantly see profit or loss details.
+- 📍 Clickable Detail Sections: Clickable actions to indicate break-even and strike price points for a more intuitive experience.
+- 📂 Accordion for Detailed Information: Expandable accordion sections to view all relevant information neatly organized.
+
+## Tech Stack
+
+- 🔷 Vue 2
+- 🎨 Tailwind CSS
+- 📈 Apache ECharts
+- 🧪 Vitest
+- 🔍 React Testing Library
+- 🔧 Lodash
+
+---
 
 ## Objective
 
@@ -7,7 +29,8 @@ Design and implement a front-end for options strategy risk and reward analysis u
 ## Brief
 
 Your challenge is to create a Vue component that can generate a risk & reward graph for options strategies. The component should accept an input of up to four options contracts and output the following:
-1. A risk & reward graph where X is the price of the underlying at the time of expiry and Y is the profit/loss at that price. 
+
+1. A risk & reward graph where X is the price of the underlying at the time of expiry and Y is the profit/loss at that price.
 2. Max profit, max loss, and all break even points.
 
 ### Evaluation Criteria
@@ -17,7 +40,7 @@ Your challenge is to create a Vue component that can generate a risk & reward gr
 - Aesthetics of the UI
 - Readability and code structure
 
-### CodeSubmit 
+### CodeSubmit
 
 Please organize, design, test, and document your code as if it were
 going into production - then push your changes to the main branch.
