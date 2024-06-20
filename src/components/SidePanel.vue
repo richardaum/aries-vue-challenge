@@ -1,5 +1,5 @@
 <template>
-  <ul class="gap-4 text-left flex flex-col my-4 items-start">
+  <ul class="gap-4 text-left flex flex-col my-4 items-start" data-testid="side-panel">
     <li
       v-for="(option, index) in options"
       :key="index"
@@ -29,18 +29,20 @@
         </svg>
       </button>
 
-      <div class="px-2 pb-2" v-if="open.index === index">
+      <div class="px-2 pb-2" v-if="open.index === index" data-testid="details">
         <hr class="my-2 border-gray-300" />
         <div class="text-sm grid grid-cols-3 gap-4">
-          <div>
+          <div data-testid="bid">
             <div class="text-xs text-black/50">Bid</div>
             {{ toCurrency(option.bid) }}
           </div>
-          <div>
+
+          <div data-testid="ask">
             <div class="text-xs text-black/50">Ask</div>
             {{ toCurrency(option.ask) }}
           </div>
-          <div>
+
+          <div data-testid="strike-price">
             <div class="text-xs text-black/50">Strike Price</div>
             <button
               class="underline decoration-dashed underline-offset-2 decoration-from-font"
@@ -49,7 +51,8 @@
               {{ toCurrency(option.strike_price) }}
             </button>
           </div>
-          <div>
+
+          <div data-testid="break-even">
             <div class="text-xs text-black/50">Break Even</div>
             <button
               class="underline decoration-dashed underline-offset-2 decoration-from-font"
@@ -58,11 +61,13 @@
               {{ toCurrency(getBreakEven(option)) }}
             </button>
           </div>
-          <div>
+
+          <div data-testid="max-profit">
             <div class="text-xs text-black/50">Max Profit</div>
             {{ getMaxReward(option) }}
           </div>
-          <div>
+
+          <div data-testid="max-loss">
             <div class="text-xs text-black/50">Max Loss</div>
             {{ getMinReward(option) }}
           </div>

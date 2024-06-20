@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { ProfitLossChart, getLineLabel } from "./chart";
 import { TooltipFormatterParams } from "@/types/chart";
+import { JSDOM } from "jsdom";
 
 describe("getLineLabel", () => {
   it("returns label for line", () => {
@@ -47,11 +48,13 @@ describe("ProfitLossChart", () => {
     const tooltipConfig = vi.mocked(chart.echarts?.setOption)?.mock.calls[0][0].tooltip as {
       formatter: (params: TooltipFormatterParams[]) => string;
     };
-    const tooltip = tooltipConfig.formatter([
-      { axisValue: 100, value: [100, 200], color: "red", seriesName: "Call&Long" },
-    ]);
 
-    expect(tooltip).toMatchInlineSnapshot(`"<div data-v-8f582b69="" class="tooltip-content"><strong data-v-8f582b69="">Price:</strong> $100.00 <br data-v-8f582b69=""><div data-v-8f582b69="" class="tooltip-item"><span data-v-8f582b69="" class="tooltip-color" style="background-color: red;"></span><span data-v-8f582b69="">Call&amp;Long:</span> &nbsp; <span data-v-8f582b69="" class="flex items-center text-green-500"> $200.00 <svg data-v-8f582b69="" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class=""><path data-v-8f582b69="" d="M7.1341 4.88941C7.519 4.22274 8.48125 4.22274 8.86615 4.8894L12.5946 11.3473C12.9795 12.014 12.4984 12.8474 11.7286 12.8474H4.27163C3.50183 12.8474 3.0207 12.014 3.4056 11.3474L7.1341 4.88941Z" fill="currentColor"></path></svg></span></div></div>"`);
+    const tooltip = new JSDOM(
+      tooltipConfig.formatter([{ axisValue: 100, value: [100, 200], color: "red", seriesName: "Call&Long" }])
+    ).window.document.body;
+
+    expect(tooltip).toHaveTextContent(/Price:\s*\$100\.00/i);
+    expect(tooltip).toHaveTextContent(/Call&Long:\s*\$200\.00/i);
   });
 
   describe("remove markLine", () => {

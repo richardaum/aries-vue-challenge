@@ -18,6 +18,11 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
+    setupFiles: ["./vitest-setup.js"],
+    coverage: {
+      include: ["src/**/*"],
+      exclude: ["src/main.ts", "src/App.vue"],
+    },
   },
   resolve: {
     alias,
