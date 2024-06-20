@@ -19,6 +19,7 @@
 - 🎨 Tailwind CSS
 - 📈 Apache ECharts
 - 🔡 TypeScript
+- 🌟 Bun
 - 🧪 Vitest
 - 🔍 React Testing Library
 - 🔧 Lodash
