@@ -3,19 +3,20 @@ import { capitalize, range } from "lodash";
 import * as echarts from "echarts";
 import Vue from "vue";
 import TooltipFormatter from "@/components/TooltipFormatter.vue";
+import { TooltipFormatterParams } from "@/types/chart";
+
+export const colors = ["#4bc0c0", "#9966ff", "#ff9f40", "#ff6384"];
 
 export function getLineLabel(option: OptionContract, index: number): string {
   return `#${index + 1} (${capitalize(option.type)}&${capitalize(option.long_short)})`;
 }
 
-export const colors = ["#4bc0c0", "#9966ff", "#ff9f40", "#ff6384"];
-
 export class ProfitLossChart<T> {
-  private echarts?: echarts.ECharts;
+  echarts?: echarts.ECharts;
 
   constructor(
     element: HTMLElement,
-    private data: T[],
+    public data: T[],
     options: {
       lineLabelBuilder: (option: T, index: number) => string;
       yAxisBuilder: (x: number, option: T) => number;
@@ -29,9 +30,7 @@ export class ProfitLossChart<T> {
 
     this.echarts.setOption({
       tooltip: {
-        formatter: function (
-          params: { axisValue: number; value: [number, number]; color: string; seriesName: string }[]
-        ) {
+        formatter: function (params: TooltipFormatterParams[]) {
           const TooltipConstructor = Vue.extend(TooltipFormatter);
           const instance = new TooltipConstructor({
             propsData: {
