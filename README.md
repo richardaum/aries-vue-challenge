@@ -6,11 +6,11 @@
 
 ## Features
 
-- 🎛️ Interactive Chart with Pan & Zoom: Use your mouse to easily navigate and explore data.
+- 🎛️ Interactive Chart with Pan & Zoom: Use your mouse wheel to easily navigate and explore data.
 - 📊 Tooltips for Profit or Loss Information: Hover over points on the chart to instantly see profit or loss details.
-- 📍 Clickable Detail Sections: Clickable actions to indicate break-even and strike price points for a more intuitive experience.
+- 🖱️ Clickable Detail Sections: Clickable actions to indicate break-even and strike price points for a more intuitive experience.
 - 📂 Accordion for Detailed Information: Expandable accordion sections to view all relevant information neatly organized.
-- 🔑 Accessible Navigation: Elements are navigable and actionable via keyboard.
+- 💻 Accessible Navigation: Elements are navigable and actionable via keyboard.
 - 🧏 Structured Headers: Headers are structured according to a11y standards for screen reader navigation.
 
 ## Tech Stack
@@ -18,6 +18,7 @@
 - 🔷 Vue 2
 - 🎨 Tailwind CSS
 - 📈 Apache ECharts
+- 🔡 TypeScript
 - 🧪 Vitest
 - 🔍 React Testing Library
 - 🔧 Lodash
