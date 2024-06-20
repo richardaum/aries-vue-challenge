@@ -24,6 +24,11 @@
 - 🔍 React Testing Library
 - 🔧 Lodash
 
+## Acknowledgments
+
+- 100% code coverage on the source code 🥳
+- Improved DevX with Typescript 🤓
+
 ---
 
 ## Objective
