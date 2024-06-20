@@ -8,7 +8,14 @@
       &nbsp;
       <span :class="reward.value >= 0 ? 'text-green-500' : 'text-red-500'" class="flex items-center">
         {{ toCurrency(reward.value) }}
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          :class="reward.value >= 0 ? '' : 'rotate-180'"
+        >
           <path
             d="M7.1341 4.88941C7.519 4.22274 8.48125 4.22274 8.86615 4.8894L12.5946 11.3473C12.9795 12.014 12.4984 12.8474 11.7286 12.8474H4.27163C3.50183 12.8474 3.0207 12.014 3.4056 11.3474L7.1341 4.88941Z"
             fill="currentColor"
