@@ -1,16 +1,15 @@
 <template>
   <section class="text-left">
     <div class="bg-black/[0.04] border-solid border-2 rounded-xl w-[250px] p-2" data-testid="summary">
-      <div class="text-xs font-bold">Summary</div>
+      <h2 class="text-xs font-bold">Summary</h2>
 
       <div class="grid grid-cols-2 gap-4">
-        <div data-testid="max-profit"><span class="text-xs text-black/50">Max Profit</span><br />{{ maxProfit }}</div>
-        <div data-testid="max-loss"><span class="text-xs text-black/50">Max Loss</span><br />{{ maxLoss }}</div>
+        <h3 data-testid="max-profit"><span class="text-xs text-black/50">Max Profit</span><br />{{ maxProfit }}</h3>
+        <h3 data-testid="max-loss"><span class="text-xs text-black/50">Max Loss</span><br />{{ maxLoss }}</h3>
 
         <div class="col-span-2" data-testid="break-evens">
-          <span class="text-xs text-black/50">All break evens</span>
-          <br />
-          <ul class="flex flex-wrap gap-1">
+          <h3 class="text-xs text-black/50">All break evens</h3>
+          <ul class="flex flex-wrap gap-1 mt-1">
             <li v-for="(breakEven, index) in allBreakEvens" :key="index">
               <button
                 :style="`border-color: ${colors[index]}; background-color: ${ligtenColors[index]}`"
@@ -33,7 +32,7 @@
         class="border-solid border-2 rounded-xl min-w-[250px]"
       >
         <button class="p-2 w-full flex items-center" @click="open.index = index" :disabled="open.index === index">
-          <div class="text-xs font-bold">{{ getLineLabel(option, index) }}</div>
+          <h2 class="text-xs font-bold">{{ getLineLabel(option, index) }}</h2>
           <svg
             v-if="open.index !== index"
             width="16"
@@ -53,15 +52,15 @@
           <hr class="mb-2 border-gray-300" />
           <div class="text-sm grid grid-cols-3 gap-4">
             <div data-testid="bid">
-              <div class="text-xs text-black/50">Bid</div>
+              <h3 class="text-xs text-black/50">Bid</h3>
               {{ toCurrency(option.bid) }}
             </div>
-            <div data-testid="ask">
+            <h3 data-testid="ask">
               <div class="text-xs text-black/50">Ask</div>
               {{ toCurrency(option.ask) }}
-            </div>
+            </h3>
             <div data-testid="strike-price">
-              <div class="text-xs text-black/50">Strike Price</div>
+              <h3 class="text-xs text-black/50">Strike Price</h3>
               <button
                 class="underline decoration-dashed underline-offset-2 decoration-from-font"
                 @click="$emit('select-strike-price', option.strike_price, index)"
@@ -70,7 +69,7 @@
               </button>
             </div>
             <div data-testid="break-even">
-              <div class="text-xs text-black/50">Break Even</div>
+              <h3 class="text-xs text-black/50">Break Even</h3>
               <button
                 class="underline decoration-dashed underline-offset-2 decoration-from-font"
                 @click="$emit('select-break-even', getBreakEven(option), index)"
@@ -79,11 +78,11 @@
               </button>
             </div>
             <div data-testid="max-profit">
-              <div class="text-xs text-black/50">Max Profit</div>
+              <h3 class="text-xs text-black/50">Max Profit</h3>
               {{ toCurrency(getMaxReward(option)) }}
             </div>
             <div data-testid="max-loss">
-              <div class="text-xs text-black/50">Max Loss</div>
+              <h3 class="text-xs text-black/50">Max Loss</h3>
               {{ toCurrency(getMinReward(option)) }}
             </div>
           </div>
@@ -128,24 +127,3 @@ export default Vue.extend({
   },
 });
 </script>
-
-<style scoped>
-.tooltip-content {
-  padding: 5px;
-  border-radius: 3px;
-  background-color: #fff;
-  color: #333;
-  font-size: 14px;
-}
-.tooltip-item {
-  display: flex;
-  align-items: center;
-}
-.tooltip-color {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
-  margin-right: 5px;
-}
-</style>
