@@ -69,7 +69,7 @@ describe("CodingChallenge", () => {
       },
     });
 
-    const breakEvenContainer = within(screen.getByTestId("side-panel")).getByTestId("break-even");
+    const breakEvenContainer = within(screen.getByTestId("options")).getByTestId("break-even");
     await fireEvent.click(within(breakEvenContainer).getByRole("button"));
 
     const setOptionLastCall = setOption.mock.lastCall;

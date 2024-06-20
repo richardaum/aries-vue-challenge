@@ -228,7 +228,7 @@ describe("Domain Utils", () => {
           bid: 1,
           expiration_date: "2021-01-01",
         });
-        expect(maxReward).toBe("Infinity");
+        expect(maxReward).toBe(Infinity);
       });
     });
 
@@ -242,7 +242,7 @@ describe("Domain Utils", () => {
           bid: 1,
           expiration_date: "2021-01-01",
         });
-        expect(maxReward).toBe("$1.00");
+        expect(maxReward).toBe(1);
       });
     });
 
@@ -256,7 +256,7 @@ describe("Domain Utils", () => {
           bid: 1,
           expiration_date: "2021-01-01",
         });
-        expect(maxReward).toBe("Infinity");
+        expect(maxReward).toBe(Infinity);
       });
     });
 
@@ -270,7 +270,7 @@ describe("Domain Utils", () => {
           bid: 1,
           expiration_date: "2021-01-01",
         });
-        expect(maxReward).toBe("$1.00");
+        expect(maxReward).toBe(1);
       });
     });
   });
@@ -303,7 +303,7 @@ describe("Domain Utils", () => {
           bid: 1,
           expiration_date: "2021-01-01",
         });
-        expect(minReward).toBe("-$2.00");
+        expect(minReward).toBe(-2);
       });
     });
 
@@ -317,7 +317,7 @@ describe("Domain Utils", () => {
           bid: 1,
           expiration_date: "2021-01-01",
         });
-        expect(minReward).toBe("-Infinity");
+        expect(minReward).toBe(-Infinity);
       });
     });
 
@@ -331,7 +331,7 @@ describe("Domain Utils", () => {
           bid: 1,
           expiration_date: "2021-01-01",
         });
-        expect(minReward).toBe("-$2.00");
+        expect(minReward).toBe(-2);
       });
     });
 
@@ -345,7 +345,7 @@ describe("Domain Utils", () => {
           bid: 1,
           expiration_date: "2021-01-01",
         });
-        expect(minReward).toBe("-Infinity");
+        expect(minReward).toBe(-Infinity);
       });
     });
   });

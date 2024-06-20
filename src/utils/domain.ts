@@ -22,18 +22,18 @@ export function getReward(price: number, option: OptionContract): number {
   throw new Error("Invalid option contract");
 }
 
-export function getMaxReward(option: OptionContract): string {
-  if (option.type === "Call" && option.long_short === "long") return "Infinity";
-  if (option.type === "Call" && option.long_short === "short") return toCurrency(option.bid);
-  if (option.type === "Put" && option.long_short === "long") return "Infinity";
-  if (option.type === "Put" && option.long_short === "short") return toCurrency(option.bid);
+export function getMaxReward(option: OptionContract): number {
+  if (option.type === "Call" && option.long_short === "long") return Infinity;
+  if (option.type === "Call" && option.long_short === "short") return option.bid;
+  if (option.type === "Put" && option.long_short === "long") return Infinity;
+  if (option.type === "Put" && option.long_short === "short") return option.bid;
   throw new Error("Invalid option contract");
 }
 
-export function getMinReward(option: OptionContract): string {
-  if (option.type === "Call" && option.long_short === "long") return toCurrency(-option.ask);
-  if (option.type === "Call" && option.long_short === "short") return "-Infinity";
-  if (option.type === "Put" && option.long_short === "long") return toCurrency(-option.ask);
-  if (option.type === "Put" && option.long_short === "short") return "-Infinity";
+export function getMinReward(option: OptionContract): number {
+  if (option.type === "Call" && option.long_short === "long") return -option.ask;
+  if (option.type === "Call" && option.long_short === "short") return -Infinity;
+  if (option.type === "Put" && option.long_short === "long") return -option.ask;
+  if (option.type === "Put" && option.long_short === "short") return -Infinity;
   throw new Error("Invalid option contract");
 }
