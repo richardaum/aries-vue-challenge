@@ -15,14 +15,11 @@
 
 <script lang="ts">
 import { OptionContract } from "@/types/domain";
-import { colors, getLineLabel } from "@/utils/chart";
+import { colors, getLineLabel, ProfitLossChart } from "@/utils/chart";
 import { toCurrency } from "@/utils/currency";
 import { getBreakEven, getMaxReward, getMinReward, getReward } from "@/utils/domain";
-import * as echarts from "echarts";
-import { range } from "lodash";
 import Vue from "vue";
 import SidePanel from "./SidePanel.vue";
-import TooltipFormatter from "./TooltipFormatter.vue";
 
 export default Vue.extend({
   name: "CodingChallenge",
@@ -38,7 +35,7 @@ export default Vue.extend({
   data() {
     return {
       options: this.optionsData,
-      echarts: null as echarts.ECharts | null,
+      chart: null as ProfitLossChart<OptionContract> | null,
       colors,
     };
   },
@@ -46,7 +43,7 @@ export default Vue.extend({
     this.initChart();
   },
   beforeDestroy() {
-    this.echarts?.dispose();
+    this.chart?.dispose();
   },
   methods: {
     toCurrency,
@@ -55,105 +52,25 @@ export default Vue.extend({
     getMinReward,
     getMaxReward,
     showMarkline(x: number, prefix: string, color: string) {
-      this.echarts?.setOption({
-        series: [
-          {
-            markLine: {
-              data: [
-                {
-                  xAxis: x,
-                  label: { formatter: `${prefix}: ${toCurrency(x)}` },
-                  lineStyle: { color },
-                },
-              ],
-            },
-          },
-        ],
+      this.chart?.setMarkLine({
+        value: x,
+        label: `${prefix}: ${toCurrency(x)}`,
+        color,
       });
     },
     initChart() {
-      const step = 1;
       const offset = 50;
       const minValue = Math.min(...this.options.map((o) => Math.min(o.strike_price, getBreakEven(o)))) - offset;
       const maxValue = Math.max(...this.options.map((o) => Math.max(o.strike_price, getBreakEven(o)))) + offset;
 
-      const chart = echarts.init(this.$refs.echarts as HTMLElement);
-      const settings = {
-        tooltip: {
-          formatter: function (
-            params: { axisValue: number; value: [number, number]; color: string; seriesName: string }[]
-          ) {
-            const TooltipConstructor = Vue.extend(TooltipFormatter);
-            const instance = new TooltipConstructor({
-              propsData: {
-                price: params[0].axisValue,
-                visible: true,
-                rewards: params.map((param) => ({
-                  value: param.value[1],
-                  optionLabel: param.seriesName,
-                  optionColor: param.color,
-                })),
-              },
-            });
-            instance.$mount();
-            return instance.$el.outerHTML;
-          },
-          trigger: "axis",
-        },
-        legend: {
-          data: this.options.map((option, index) => getLineLabel(option, index)),
-        },
-        toolbox: {
-          feature: {
-            dataZoom: { icon: null },
-          },
-        },
-        dataZoom: [
-          { type: "inside", start: 0, end: 100 },
-          { start: 0, end: 100 },
-        ],
-        xAxis: {
-          type: "value",
-          axisLabel: { formatter: "${value}" },
-          name: "Underlying Price ($)",
-          nameLocation: "middle",
-          nameGap: 40,
-        },
-        yAxis: {
-          type: "value",
-          axisLabel: {
-            formatter: "${value}",
-          },
-          name: "Profit & Loss ($)",
-          nameLocation: "middle",
-          nameGap: 40,
-        },
-        series: [
-          ...this.options.map((option, index) => {
-            return {
-              data: range(minValue, maxValue, step).map((value) => ({
-                value: [value, getReward(value, option).toFixed(2)],
-              })),
-              type: "line",
-              name: getLineLabel(option, index),
-              showSymbol: false,
-              itemStyle: { color: this.colors[index] },
-            };
-          }),
-        ],
-      };
-
-      chart.setOption(settings);
-
-      chart.on("click", function (params) {
-        if (params.componentType === "markLine") {
-          chart.setOption({
-            series: [{ markLine: { data: [] } }],
-          });
-        }
+      this.chart = new ProfitLossChart(this.$refs.echarts as HTMLElement, this.options, {
+        lineLabelBuilder: (option, index) => getLineLabel(option, index),
+        yAxisBuilder: (x, option) => getReward(x, option),
+        xMinValue: minValue,
+        xMaxValue: maxValue,
+        xStep: 1,
+        colorBuilder: (index) => this.colors[index],
       });
-
-      this.echarts = chart;
     },
   },
 });
